@@ -1,20 +1,10 @@
+hotfix:
+  name: test-hotfix-forwarding
+
 streams:
-  stable:
-    type: production
-  testing:
-    type: production
-  next:
-    type: production
   testing-devel:
     type: development
     default: true
-  # next-devel:         # do not touch; line managed by `next-devel/manage.py`
-    # type: development # do not touch; line managed by `next-devel/manage.py`
-  rawhide:
-    type: development
-    konflux_driven: true
-  # branched:
-  #   type: development
 
 additional_arches: [aarch64, ppc64le, s390x]
 
@@ -22,97 +12,14 @@ source_config:
   url: https://github.com/coreos/fedora-coreos-config
 
 s3:
-  bucket: fcos-builds
-  # see bucket layout in https://github.com/coreos/fedora-coreos-tracker/issues/189
+  bucket: prod-account-match-fcos-builds
   builds_key: "prod/streams/${STREAM}"
-  oci_sigs_key: "prod/signatures/oci"
-  # just upload as public-read for now, but see discussions in
-  # https://github.com/coreos/fedora-coreos-tracker/issues/189
   acl: public-read
-
-registry_repos:
-  oscontainer:
-    - repo: quay.io/fedora/fedora-coreos
-      tags: ["${STREAM}", "${VERSION}"]
-  kubevirt:
-    - repo: quay.io/fedora/fedora-coreos-kubevirt
-      tags: ["${STREAM}"]
 
 default_artifacts:
   all:
     - qemu
-    - metal
-    - metal4k
-    - live
-    - openstack
-  aarch64:
-    - applehv
-    - aws
-    - azure
-    - gcp
-    - hetzner
-    - hyperv
-    - oraclecloud
-  ppc64le:
-    - powervs
-  s390x:
-    - ibmcloud
-    - kubevirt
-  x86_64:
-    - aliyun
-    - applehv
-    - aws
-    - azure
-    - azurestack
-    - digitalocean
-    - exoscale
-    - gcp
-    - hetzner
-    - hyperv
-    - ibmcloud
-    - kubevirt
-    - nutanix
-    - oraclecloud
-    - proxmoxve
-    - virtualbox
-    - vmware
-    - vultr
-
-clouds:
-  aws:
-    bucket: fcos-builds/ami-import
-    primary_region: us-east-1
-    # we make our images public in the release job via plume
-    public: false
-    # Accounts to share newly created AMIs with
-    # Added the FCOS community account so kola can use for testing
-    grant_users:
-      - "013116697141"
-    # Add FedoraGroup=coreos as per Fedora Policy
-    # Ref: https://github.com/coreos/fedora-coreos-tracker/issues/1605
-    tags:
-      - "FedoraGroup=coreos"
-  azure:
-    test_resource_group: fedora-coreos-testing
-    test_storage_account: fedoracoreostesting
-    test_storage_container: fedora-coreos-testing-image-blobs
-    test_gallery: fedoracoreostestinggallery
-    test_coreos_gallery_profile: fedora-community
-  gcp:
-    bucket: fedora-coreos-cloud-image-uploads/image-import
-    description: "Fedora, Fedora CoreOS ${STREAM}, ${BUILDID}, ${BASEARCH} published on ${DATE}"
-    family:
-      x86_64: "fedora-coreos-${STREAM}"
-      aarch64: "fedora-coreos-${STREAM}-arm64"
-    public: true
-    licenses:
-      - "fedora-coreos-${STREAM}"
-      - "https://compute.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
-  openstack:
-    test_architectures: [x86_64, aarch64]
 
 misc:
-  generate_release_index: true
-  run_extended_upgrade_test_fcos: true
   allow_missing_architectures_when_autotriggering_release_job: true
   allow_skip_of_untested_artifacts: true
